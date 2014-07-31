@@ -11,6 +11,8 @@
 		sound_init();
 		
 		$("#soundOpt")[0].addEventListener("click", mainClick_init, false);
+		
+		$("#rabbit0")[0].addEventListener("click", test_rabbit, false);
 	}
 	
 	function mainClick_init(event)
@@ -24,7 +26,7 @@
 	
 		$("#soundOpt").css("opacity", "0");
 		
-		sound_play({id: "BGM_BG_FOREST", loop: Infinity, volume: 1});
+		sound_play({id: "BGM_BG_FOREST", loop: Infinity, volume: 1, uniqueId: "LEVEL_BG"});
 		
 		whale_test();
 	}
@@ -73,6 +75,11 @@
         //Play the sound: play (src, interrupt, delay, offset, loop, volume, pan)
             
 		var instance = createjs.Sound.play(target.id, createjs.Sound.INTERRUPT_NONE, 0, 0, target.loop, target.volume);
+		
+		if(target.uniqueId)
+		{
+			instance.uniqueId = target.uniqueId;
+		}
             
         if(instance == null || instance.playState == createjs.Sound.PLAY_FAILED) 
         { 
@@ -84,6 +91,22 @@
 		 
 		});
 	}
+	
+	function sound_volume(instanceSearch, newVolume)
+	{
+		trace(createjs.Sound._instances.length);
+		
+		for(var i = 0; i < createjs.Sound._instances.length; i++)
+		{
+			if(createjs.Sound._instances[i].uniqueId === instanceSearch)
+			{
+				trace("FOUND");
+				
+				createjs.Sound._instances[i]._volume = newVolume;
+			}
+		}
+	}
+
 	
 	/////////// SOUND
 	
@@ -111,7 +134,9 @@
 	{
 		var exitFrame;
 		
-		trace(event);
+		var soundTest;
+		
+		// trace(event);
 		
 		$("#whaleMain").addClass("tween-whaleSpriteSafety");
 		$("#whaleMain").removeClass("tween-whaleSprite");
@@ -124,5 +149,16 @@
 		
 		}, 20);
 		
-		sound_play({id: "BGM_FX_SPLASH", loop: 0, volume: 1});
+		sound_play({id: "BGM_FX_SPLASH", loop: 0, volume: 1, uniqueId: "WHALE_SPLASH"});
+	
+		// trace(createjs);
+	}
+	
+	function test_rabbit(event)
+	{
+		trace("test_rabbit();");
+		
+		sound_volume("LEVEL_BG", 0.2);
+		
+		
 	}
