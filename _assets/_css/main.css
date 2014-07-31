@@ -1,0 +1,904 @@
+@charset "UTF-8";
+
+	*
+	{
+		margin: 0;
+		padding: 0;
+		
+		outline: none;
+		padding: none;
+		
+		-webkit-touch-callout: none;
+		touch-callout: none;
+		
+		-webkit-user-select: none;
+		user-select: none;
+	}
+	
+	.tweenFlickerFix div
+	{
+		-webkit-backface-visibility	: hidden;
+		backface-visibility			: hidden;		
+	}
+	
+	.animationHelper
+	{
+		-webkit-transform: translateZ(0);
+		transform: translateZ(0);		
+	}
+	
+	.pixels_water
+	{
+		background-image: url(../_img/tile_river_2x.gif);
+		background-repeat: repeat;
+		background-position: left top;
+		background-size: 80px 80px;
+	}
+	
+	.pixels_waterEdge
+	{
+		background-image: url(../_img/tileWaterEdge_2x.png);
+		background-repeat: repeat;
+		background-position: left top;
+		background-size: 40px 40px;
+	}
+	
+	.pixels_trees
+	{
+		background-image: url(../_img/tile_pineTreesMass_2x.png);
+		background-repeat: repeat;
+		background-position: center top;
+		background-size: 240px 240px;
+	}
+	
+	.pixels_map_enemy40x40
+	{
+		background-image: url(../_img/map_enemySprite40x40_2x.png);
+		background-repeat: no-repeat;
+		background-size: 320px 360px;		
+	}
+	
+	
+	#soundOpt
+	{
+		width: 100%;
+		height: 100%;
+		
+		font-family: sans-serif;
+		font-weight: bolder;
+		font-size: 60px;
+		
+		text-align: center;
+		
+		color: #fff;
+		
+		position: absolute;
+		
+		left: 0; right: 0; top: 0;bottom: 0;
+		
+		z-index: 1;
+		
+		overflow: hidden;
+		
+		background: #ff0033;
+		
+		pointer-events: auto;
+	}
+	
+	.tween-soundOpt
+	{
+		-webkit-transition: opacity 1s ease;
+		transition: opacity 1s ease;
+	}
+	
+	h1
+	{
+		width: 100%;
+		height: 1em;
+		
+		font-size: 1em;
+		line-height: 1;
+		
+		display: inline-block;
+		
+		position: absolute;
+		
+		left: 0; right: 0; top: 0;bottom: 0;
+		
+		margin: auto;
+		
+		z-index: 0;
+		
+	}
+	
+	#wrapper
+	{
+		width: 100%;
+		height: 100%;
+		
+		position: absolute;
+		
+		left: 0; right: 0; top: 0;bottom: 0;
+		
+		z-index: 0;
+		
+		overflow: hidden;
+	}
+	
+	#content
+	{
+		width: 320px;
+		height: 100%;
+		
+		position: relative;
+		
+		margin: 0 auto;
+	}
+	
+	.water
+	{
+		position: absolute;
+		
+		z-index: 0;
+	}
+	
+	.tree
+	{
+		position: absolute;
+		
+		z-index: 0;
+	}
+	
+	.waterEdge
+	{
+		position: absolute;
+		
+		z-index: 0;
+	}
+	
+	.tween-waterEdge
+	{
+		-webkit-animation: tweenWaterEdgeFrames 0.1s linear infinite;
+		animation: tweenWaterEdgeFrames 0.1s linear infinite;
+	}
+	
+	@-webkit-keyframes tweenWaterEdgeFrames
+	{
+		0%		{opacity: 1;}	
+		50%		{opacity: 0.4;}
+		100%	{opacity: 1;}
+	}
+	
+	@keyframes tweenWaterEdgeFrames
+	{
+		0%		{opacity: 1;}	
+		50%		{opacity: 0.4;}
+		100%	{opacity: 1;}		
+	}
+	
+	
+	#island
+	{
+		width: 80px;
+		height: 80px;
+		
+		position: absolute;
+		left: 0; right: 0; top: 0; bottom: 0;
+		
+		margin: 40px auto 0 40px;
+		
+		
+		z-index: 1;
+	}	
+	
+	#land
+	{
+		width: 160px;
+		height: 160px;
+		
+		background: #dfdfd5;
+		
+		position: absolute;
+		left: 0; right: 0; top: 0; bottom: 0;
+		
+		margin: 160px auto 0 auto;
+		
+		
+		z-index: 1;
+	}
+	
+	.tween-waterAmbience
+	{
+		
+		-webkit-transform-origin: 50% 50%;
+		transform-origin: 50% 50%;
+		
+		-webkit-animation: tweenWaterAmbienceFrames 0.3s ease-in-out infinite;
+		animation: tweenWaterAmbienceFrames 0.3s ease-in-out infinite;
+	}
+	
+	@-webkit-keyframes tweenWaterAmbienceFrames
+	{
+		0%		{-webkit-transform: translateX(0px) rotate(0deg) scale(1);}
+		25%		{-webkit-transform: translateX(-2px) rotate(6deg) scale(0.98);}
+		50%		{-webkit-transform: translateX(0px) rotate(0deg) scale(1);}
+		75%		{-webkit-transform: translateX(2px) rotate(-6deg) scale(0.98);}
+		100%	{-webkit-transform: translateX(0px) rotate(0deg) scale(1);}
+	}
+	
+	@keyframes tweenWaterAmbienceFrames
+	{
+		0%		{transform: translateX(0px) rotate(0deg) scale(1);}
+		25%		{transform: translateX(-2px) rotate(6deg) scale(0.98);}
+		50%		{transform: translateX(0px) rotate(0deg) scale(1);}
+		75%		{transform: translateX(2px) rotate(-6deg) scale(0.98);}
+		100%	{transform: translateX(0px) rotate(0deg) scale(1);}
+	}
+	
+		
+	
+	#island .tree, #island .waterEdge, #land .tree, #land .waterEdge 
+	{
+		background-position: 0 0;
+	}
+	
+	
+	#island-trees0
+	{
+		width: 80px;
+		height: 40px;
+		
+		-webkit-transform: translate(0px, 0px);
+		transform: translate(0px, 0px);		
+	}
+	
+	#island-trees1
+	{
+		width: 40px;
+		height: 40px;
+		
+		-webkit-transform: translate(0px, 40px);
+		transform: translate(0px, 40px);		
+	}	
+	
+	#island-waterEdge0
+	{
+		width: 40px;
+		height: 40px;
+		
+		-webkit-transform: translate(0px, 80px);
+		transform: translate(0px, 80px);
+	}
+	
+	#island-waterEdge1
+	{
+		width: 40px;
+		height: 40px;
+		
+		-webkit-transform: translate(40px, 40px);
+		transform: translate(40px, 40px);
+	}
+	
+
+	#trees0
+	{
+		width: 160px;
+		height: 40px;
+		
+		-webkit-transform: translate(0px, 0px);
+		transform: translate(0px, 0px);
+	}
+	
+	#trees1
+	{
+		width: 40px;
+		height: 80px;
+		
+		-webkit-transform: translate(120px, 40px);
+		transform: translate(120px, 40px);
+	}
+	
+	#trees2
+	{
+		width: 160px;
+		height: 40px;
+		
+		-webkit-transform: translate(0px, 120px);
+		transform: translate(0px, 120px);
+	}
+	
+	#trees3
+	{
+		width: 40px;
+		height: 80px;
+		
+		-webkit-transform: translate(0px, 40px);
+		transform: translate(0px, 40px);
+	}
+	
+	#trees4
+	{
+		width: 80px;
+		height: 40px;
+		
+		-webkit-transform: translate(40px, 160px);
+		transform: translate(40px, 160px);
+	}
+	
+	#trees5
+	{
+		width: 80px;
+		height: 40px;
+		
+		-webkit-transform: translate(40px, -40px);
+		transform: translate(40px, -40px);
+	}
+	
+	#trees6
+	{
+		width: 40px;
+		height: 80px;
+		
+		-webkit-transform: translate(-40px, 40px);
+		transform: translate(-40px, 40px);
+	}
+	
+	#trees7
+	{
+		width: 40px;
+		height: 80px;
+		
+		-webkit-transform: translate(160px, 40px);
+		transform: translate(160px, 40px);	
+	}
+	
+	#waterEdge0
+	{
+		width: 40px;
+		height: 40px;
+		
+		-webkit-transform: translate(-40px, 120px);
+		transform: translate(-40px, 120px);
+	}
+	
+	#waterEdge1
+	{
+		width: 40px;
+		height: 40px;
+		
+		-webkit-transform: translate(0px, 160px);
+		transform: translate(0px, 160px);
+	}
+	
+	#waterEdge2
+	{
+		width: 80px;
+		height: 40px;
+		
+		-webkit-transform: translate(40px, 200px);
+		transform: translate(40px, 200px);
+	}
+	
+	#waterEdge3
+	{
+		width: 40px;
+		height: 40px;
+		
+		-webkit-transform: translate(120px, 160px);
+		transform: translate(120px, 160px);
+	}
+	
+	#waterEdge4
+	{
+		width: 40px;
+		height: 40px;
+		
+		-webkit-transform: translate(160px, 120px);
+		transform: translate(160px, 120px);
+	}
+	
+	#overflow0
+	{
+		width: 40px;
+		height: 240px;
+		
+		-webkit-transform: translate(-40px, 120px);
+		transform: translate(-40px, 120px);
+	}
+	
+	#overflow0Edge
+	{
+		width: 40px;
+		height: 40px;
+		
+		-webkit-transform: translate(-40px, 120px);
+		transform: translate(-40px, 120px);
+		
+		z-index: 1;		
+	}
+
+	#overflow1
+	{
+		width: 40px;
+		height: 240px;
+		
+		-webkit-transform: translate(320px, 120px);
+		transform: translate(320px, 120px);
+	}
+	
+	#overflow1Edge
+	{
+		width: 40px;
+		height: 40px;
+		
+		-webkit-transform: translate(320px, 120px);
+		transform: translate(320px, 120px);
+		
+		z-index: 1;		
+	}
+	
+	
+	#rabbit0
+	{
+		-webkit-transform: translate(40px, 40px);
+		transform: translate(40px, 40px);
+	}
+	
+	#crow0
+	{
+		-webkit-transform: translate(80px, 80px);
+		transform: translate(80px, 80px);
+	}
+	
+	
+	
+	.map-enemy_40x40
+	{
+		width: 40px;
+		height: 40px;
+					
+		position: absolute;
+					
+		z-index: 1;
+	}
+
+	.map-enemy
+	{
+		width: inherit;
+		height: inherit;
+	}
+
+
+	.enemy-sprite
+	{
+		width: inherit;
+		height: inherit;		
+	}
+	
+	
+	.enemy-sprite .map-enemy_40x40-head
+	{
+		width: inherit;
+		height: inherit;
+					
+		position: absolute;
+		
+		/* background-position: 0px 0px; */
+					
+		z-index: 2;
+	}
+				
+	.enemy-sprite .map-enemy_40x40-hand-L
+	{
+		width: inherit;
+		height: inherit;
+					
+		background-position: 0px -40px;
+					
+		position: absolute;
+					
+		z-index: 3;				
+	}
+			
+	.enemy-sprite .map-enemy_40x40-hand-R
+	{
+		width: inherit;
+		height: inherit;
+					
+		background-position: -40px -40px;
+					
+		position: absolute;
+					
+		z-index: 3;				
+	}
+				
+	.enemy-sprite .map-enemy_40x40-body
+	{
+		width: inherit;
+		height: inherit;
+					
+		background-position: -160px 0px;
+					
+		position: absolute;
+					
+		z-index: 1;				
+	}
+			
+	.enemy-sprite .map-enemy_40x40-legs
+	{
+		width: inherit;
+		height: inherit;
+					
+		background-position: 0 -80px;
+					
+		position: absolute;
+					
+		z-index: 0;
+	}
+
+	.tween-map-enemy_40x40-head
+	{
+		-webkit-animation	: tweenMapEnemy40x40HeadFrames 0.4s ease-in-out infinite;
+		animation			: tweenMapEnemy40x40HeadFrames 0.4s ease-in-out infinite;
+	}
+			
+	@-webkit-keyframes tweenMapEnemy40x40HeadFrames
+	{
+		0%		{-webkit-transform: translateY(0px);}
+		50%		{-webkit-transform: translateY(-2px);}
+		100%	{-webkit-transform: translateY(0px);}
+	}
+			
+	@keyframes tweenMapEnemy40x40HeadFrames
+	{
+		0%		{transform: translateY(0px);}
+		50%		{transform: translateY(-2px);}
+		100%	{transform: translateY(0px);}
+	}
+			
+	.tween-map-enemy_40x40-hand-L
+	{
+		-webkit-animation	: tweenMapEnemy40x40HandL_Frames 0.6s linear infinite;
+		animation			: tweenMapEnemy40x40HandL_Frames 0.6s linear infinite;
+	}
+				
+	@-webkit-keyframes tweenMapEnemy40x40HandL_Frames
+	{
+		0%		{-webkit-transform: translateY(0px);}
+		50%		{-webkit-transform: translateY(-2px);}
+		100%	{-webkit-transform: translateY(0px);}
+	}
+				
+	@keyframes tweenMapEnemy40x40HandL_Frames
+	{
+		0%		{transform: translateY(0px);}
+		50%		{transform: translateY(-2px);}
+		100%	{transform: translateY(0px);}
+	}
+				
+	.tween-map-enemy_40x40-hand-R
+	{
+		-webkit-animation	: tweenMapEnemy40x40HandR_Frames 0.6s linear infinite;
+		animation			: tweenMapEnemy40x40HandR_Frames 0.6s linear infinite;
+	}
+			
+	@-webkit-keyframes tweenMapEnemy40x40HandR_Frames
+	{
+		0%		{-webkit-transform: translateY(-2px);}
+		50%		{-webkit-transform: translateY(0px);}
+		100%	{-webkit-transform: translateY(-2px);}
+	}
+			
+	@keyframes tweenMapEnemy40x40HandR_Frames
+	{
+		0%		{transform: translateX(-2px);}
+		50%		{transform: translateX(0px);}
+		100%	{transform: translateX(-2px);}
+	}
+
+	.tween-map-enemy_40x40_loop
+	{
+		-webkit-animation	: tweenMapEnemy40x40WalkLoopFrames 0.12s steps(8) 0 infinite;
+		animation			: tweenMapEnemy40x40WalkLoopFrames 0.12s steps(8) 0 infinite;
+	}
+			
+	.tween-map-enemy_40x40_stop
+	{
+		background-position: 0 -80px;
+	}
+			
+	@-webkit-keyframes tweenMapEnemy40x40WalkLoopFrames
+	{
+		from	{background-position: 0 -80px;}
+		to		{background-position: -320px -80px;}
+	}
+			
+	@keyframes tweenMapEnemy40x40WalkLoopFrames
+	{
+		from	{background-position: 0 -80px;}
+		to		{background-position: -320px -80px;}
+	}
+
+
+	/* DISPLAY PIXELS */
+	
+	.enemy_rabbit .map-enemy_40x40-head
+	{
+		background-position-y: 0;
+	}
+	
+	.enemy_rabbit .map-enemy_40x40-hand-L
+	{
+		background-position-y: -40px;
+	}
+	
+	.enemy_rabbit .map-enemy_40x40-hand-R
+	{
+		background-position-y: -40px;
+	}
+	
+	.enemy_rabbit .map-enemy_40x40-body
+	{
+		background-position-y: 0;
+	}
+
+	.enemy_rabbit .map-enemy_40x40-legs
+	{
+		background-position-y: -80px;
+	}
+
+
+	.enemy_crow .enemy-sprite .map-enemy_40x40-head
+	{
+		background-position-y: -120px;
+	}
+	
+	.enemy_crow .enemy-sprite .map-enemy_40x40-hand-L
+	{
+		background-position-y: -160px;
+	}
+	
+	.enemy_crow .enemy-sprite .map-enemy_40x40-hand-R
+	{
+		background-position-y: -160px;
+	}
+	
+	.enemy_crow .enemy-sprite .map-enemy_40x40-body
+	{
+		background-position-y: -120px;
+	}
+	
+	.enemy_crow .enemy-sprite .map-enemy_40x40-legs
+	{
+		background-position-y: -200px;
+	}
+	
+	
+	.enemy_zombie .enemy-sprite .map-enemy_40x40-head
+	{
+		background-position-y: -240px;
+	}
+	
+	.enemy_zombie .enemy-sprite .map-enemy_40x40-hand-L
+	{
+		background-position-y: -280px;
+	}
+	
+	.enemy_zombie .enemy-sprite .map-enemy_40x40-hand-R
+	{
+		background-position-y: -280px;
+	}
+	
+	.enemy_zombie .enemy-sprite .map-enemy_40x40-body
+	{
+		background-position-y: -240px;
+	}
+	
+	.enemy_zombie .enemy-sprite .map-enemy_40x40-legs
+	{
+		background-position-y: -320px;
+	}	
+	
+	
+	.map-enemy_40x40_head_default
+	{
+		background-position-x: 0;
+	}
+			
+	.map-enemy_40x40_head_happy
+	{
+		background-position-x: -40px;
+	}
+			
+	.map-enemy_40x40_head_dead
+	{
+		background-position-x: -80px;
+	}
+			
+	.map-enemy_40x40_head_fear
+	{
+		background-position-x: -120px;
+	}
+	
+	/* GRAVE */
+	
+	.enemy_grave40x40
+	{
+		width: 40px;
+		height: 40px;
+		
+		position: absolute;
+		
+		z-index: 0;
+	}
+	
+	.enemy_grave_sprite
+	{
+		width: inherit;
+		height: inherit;
+		
+		position: relative;
+	}
+	
+	.enemy_grave40x40 .enemy_grave_sprite
+	{
+		background-position: -280px 0;
+	}
+	
+	
+	#whaleMain
+	{
+		width: 320px;
+		height: 100%;
+		
+		position: absolute;
+		
+		z-index: 0;
+	}
+	
+	.whaleSprite
+	{
+		width: 320px;
+		height: 320px;
+		
+		position: absolute;
+		
+		left: 0; right: 0; top: 0; bottom: 0;
+		
+		margin: 0 auto 0 auto;
+		
+		opacity: 0.2;
+	}
+	
+	.pixels_whale
+	{
+		background-image: url(../_img/whale_2x.png);
+		background-repeat: no-repeat;
+		background-position: 0 0;
+		background-size: 320px 320px;
+	}
+	
+	.tween-whaleSprite
+	{
+/*
+		-webkit-animation: tweenWhaleSpriteFrames 12s ease-in infinite;
+		animation: tweenWhaleSpriteFrames 12s ease-in infinite;
+*/
+
+		-webkit-animation: tweenWhaleSpriteFrames 12s ease-in forwards;
+		animation: tweenWhaleSpriteFrames 12s ease-in forwards;
+	}
+	
+	.tween-whaleSpriteSafety
+	{
+		visibility: hidden;
+	}	
+	
+	@-webkit-keyframes tweenWhaleSpriteFrames
+	{
+		from	{-webkit-transform: translateY(-100%);}
+		to		{-webkit-transform: translateY(200%);}
+	}
+	
+	@keyframes tweenWhaleSpriteFrames
+	{
+		from	{transform: translateY(-100%);}
+		to		{transform: translateY(200%);}
+	}
+	
+	
+	#weather
+	{
+		width: inherit;
+		height: inherit;
+		
+		position: absolute;
+		
+		left: 0; right: 0; top: 0; bottom: 0;
+		
+		margin: 0;
+		
+		z-index: 1;
+	}
+	
+	.pixels_sharpClouds0
+	{
+		background-image: url(../_img/clouds_sharp0_2x.png);
+		background-repeat: repeat;
+		background-position: center top;
+		background-size: 320px 320px;
+	}
+	
+	.pixels_sharpClouds1
+	{
+		background-image: url(../_img/clouds_sharp1_2x.png);
+		background-repeat: repeat;
+		background-position: center top;
+		background-size: 320px 320px;
+	}
+	
+	.weather-clouds0, .weather-clouds1
+	{
+		width: inherit;
+		height: 200%;
+		
+		position: absolute;
+		
+		left: 0; right: 0; top: -100%; bottom: 0;
+		
+		z-index: 0;
+	}
+	
+	.tween-clouds
+	{
+		-webkit-animation: tweenCloudsFrames 4s linear infinite;
+		animation: tweenCloudsFrames 4s linear infinite;
+	}
+	
+	@-webkit-keyframes tweenCloudsFrames
+	{
+		from	{-webkit-transform: translateY(0px);}
+		to		{-webkit-transform: translateY(320px);}
+	}
+	
+	@keyframes tweenCloudsFrames
+	{
+		from	{transform: translateY(0px);}
+		to		{transform: translateY(320px);}
+	}
+	
+	.weather-clouds0
+	{
+		/* opacity: 0.4; */		
+	}
+	
+	.weather-clouds1
+	{
+		/* opacity: 0.6; */		
+	}
+	
+	.weather-clouds0
+	{
+		-webkit-animation-duration: 2s;
+		animation-duration: 2s;
+		
+		opacity: 0.4;
+		
+/*
+		-webkit-filter: blur(8px);
+		filter: blur(8px);
+*/
+	}
+	
+	.weather-clouds1
+	{
+		-webkit-animation-duration: 1.4s;
+		animation-duration: 1.4s;
+		
+		opacity: 0.6;
+		
+/*
+		-webkit-filter: blur(4px);
+		filter: blur(4px);
+*/
+	}
