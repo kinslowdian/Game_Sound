@@ -10,9 +10,17 @@
 	
 	function thisReady()
 	{
-		effects_pedal = {};
-		
 		sound_init();
+	}
+	
+	function setup()
+	{
+		$("#soundOpt")[0].addEventListener("click", mainClick_init, false);
+		$("#rabbit0")[0].addEventListener("click", test_rabbit, false);
+		$("#crow0")[0].addEventListener("click", test_crow, false);
+		$(".whaleSprite")[0].addEventListener("click", test_whale, false);
+    
+		$("#soundOpt h1").css("opacity", "1");		
 	}
 	
 	function mainClick_init(event)
@@ -27,14 +35,11 @@
 		$("#soundOpt").css("opacity", "0");
 		
 		/////// HACK FOR iOS
-		// sound_play({id: "BGM_FX_SPLASH", loop: 0, volume: 0, uniqueId: "CLICK_REFERENCE"}, false);
 		createjs.WebAudioPlugin.playEmptySound();
 		/////// HACK FOR iOS
 		
 		
-		effects_pedal.level_bg_forest = sound_play({id: "BGM_BG_FOREST", loop: Infinity, volume: 1, uniqueId: "LEVEL_BG_FOREST"}, true);
-		
-		trace(effects_pedal);
+		sound_play("level_bg_forest");
 		
 		whale_test();
 	}
@@ -64,7 +69,8 @@
             
             var manifest =	[
                 				{src:"bg_forest.mp3", id:"BGM_BG_FOREST"},
-								{src:"fx_splash.mp3", id:"BGM_FX_SPLASH"}
+								{src:"fx_splash.mp3", id:"BGM_FX_SPLASH"},
+								{src:"bgm_tune.mp3", id:"BGM_TUNE"}
 							];			
 		
 			createjs.Sound.alternateExtensions = ["mp3"];	// add other extensions to try loading if the src file extension is not supported
@@ -75,14 +81,21 @@
 	
     function sound_loaded(event) 
     {
-		$("#soundOpt")[0].addEventListener("click", mainClick_init, false);
-		$("#rabbit0")[0].addEventListener("click", test_rabbit, false);
-		$("#crow0")[0].addEventListener("click", test_crow, false);
-    
-		$("#soundOpt h1").css("opacity", "1");
+		setup();
+		
+		sound_list();
     }
     
-	function sound_play(target, returnInstance)
+    function sound_list()
+    {
+		effects_pedal = {};
+		
+		effects_pedal.level_bg_forest = sound_run({id: "BGM_BG_FOREST", loop: -1, volume: 1, uniqueId: "LEVEL_BG_FOREST"}, true, true);
+		
+		effects_pedal.fx_splash = sound_run({id: "BGM_FX_SPLASH", loop: 0, volume: 1, uniqueId: "WHALE_SPLASH"}, true, true);	    
+    }
+    
+	function sound_run(target, paused, returnInstance)
 	{
 		//Play the sound: play (src, interrupt, delay, offset, loop, volume, pan)
 		
@@ -95,6 +108,11 @@
 		
 		else
 		{
+			if(paused)
+			{
+				instance.stop();	
+			}
+			
 			if(target.uniqueId)
 			{
 				instance.uniqueId = target.uniqueId;
@@ -111,47 +129,41 @@
 			
 		});		
 	}
-    
-/*
-    function sound_play(target, returnInstance) 
-    {
-         //Play the sound: play (src, interrupt, delay, offset, loop, volume, pan)
-            
-		var instance = createjs.Sound.play(target.id, createjs.Sound.INTERRUPT_NONE, 0, 0, target.loop, target.volume);
-            
-        if(instance == null || instance.playState == createjs.Sound.PLAY_FAILED) 
-        { 
-         	return; 
-        }
-        
-        else
-        {
-	       if(target.uniqueId)
-		   {
-			   instance.uniqueId = target.uniqueId;
-		}
-			
-			if(returnInstance)
-			{
-				return instance;
-			}
-        }
-		 
-		instance.addEventListener ("complete", function(instance) 
-		{
-		 
-		});
-	}
-*/
 	
 	function sound_volume(soundID, newVolume)
 	{
-		effects_pedal[soundID].setVolume(newVolume);
+		if(effects_pedal[soundID])
+		{
+			effects_pedal[soundID].setVolume(newVolume);	
+		}
+	}
+	
+	function sound_play(soundID)
+	{
+		if(effects_pedal[soundID])
+		{
+			effects_pedal[soundID].play();	
+		}
 	}
 	
 	function sound_stop(soundID)
 	{
-		effects_pedal[soundID].stop();
+		if(effects_pedal[soundID])
+		{
+			effects_pedal[soundID].stop();	
+		}
+	}
+	
+	function sound_purge()
+	{
+		trace("sound_purge();");
+		
+		for(var soundOBJ in effects_pedal)
+		{
+			effects_pedal[soundOBJ].stop();
+		}
+		
+		effects_pedal = {};
 	}
 
 	
@@ -196,9 +208,7 @@
 		
 		}, 20);
 		
-		sound_play({id: "BGM_FX_SPLASH", loop: 0, volume: 1, uniqueId: "WHALE_SPLASH"}, false);
-	
-		// trace(createjs);
+		sound_play("fx_splash");
 	}
 	
 	function test_rabbit(event)
@@ -210,10 +220,23 @@
 	
 	function test_crow(event)
 	{
+		trace("test_crow();");
+		
 		sound_stop("level_bg_forest");
 	}
 	
 	function test_whale(event)
 	{
+		trace("test_whale();");
 		
+		sound_purge();
+		
+		new_sound();
+	}
+	
+	function new_sound()
+	{
+		effects_pedal = {};
+		
+		effects_pedal.level_tune = sound_run({id: "BGM_TUNE", loop: -1, volume: 1, uniqueId: "LEVEL_BGM"}, false, true);		
 	}
