@@ -3,16 +3,16 @@
 	
 	var preload;
 	
+	var effects_pedal;
+	
 	
 	$(document).ready( function(){ thisReady(); } );
 	
 	function thisReady()
 	{
+		effects_pedal = {};
+		
 		sound_init();
-		
-		$("#soundOpt")[0].addEventListener("click", mainClick_init, false);
-		
-		$("#rabbit0")[0].addEventListener("click", test_rabbit, false);
 	}
 	
 	function mainClick_init(event)
@@ -26,7 +26,15 @@
 	
 		$("#soundOpt").css("opacity", "0");
 		
-		sound_play({id: "BGM_BG_FOREST", loop: Infinity, volume: 1, uniqueId: "LEVEL_BG"});
+		/////// HACK FOR iOS
+		// sound_play({id: "BGM_FX_SPLASH", loop: 0, volume: 0, uniqueId: "CLICK_REFERENCE"}, false);
+		createjs.WebAudioPlugin.playEmptySound();
+		/////// HACK FOR iOS
+		
+		
+		effects_pedal.level_bg_forest = sound_play({id: "BGM_BG_FOREST", loop: Infinity, volume: 1, uniqueId: "LEVEL_BG_FOREST"}, true);
+		
+		trace(effects_pedal);
 		
 		whale_test();
 	}
@@ -67,23 +75,66 @@
 	
     function sound_loaded(event) 
     {
-
+		$("#soundOpt")[0].addEventListener("click", mainClick_init, false);
+		$("#rabbit0")[0].addEventListener("click", test_rabbit, false);
+		$("#crow0")[0].addEventListener("click", test_crow, false);
+    
+		$("#soundOpt h1").css("opacity", "1");
     }
     
-    function sound_play(target) 
-    {
-        //Play the sound: play (src, interrupt, delay, offset, loop, volume, pan)
-            
+	function sound_play(target, returnInstance)
+	{
+		//Play the sound: play (src, interrupt, delay, offset, loop, volume, pan)
+		
 		var instance = createjs.Sound.play(target.id, createjs.Sound.INTERRUPT_NONE, 0, 0, target.loop, target.volume);
 		
-		if(target.uniqueId)
+		if(instance == null || instance.playState == createjs.Sound.PLAY_FAILED)
 		{
-			instance.uniqueId = target.uniqueId;
+			return;
 		}
+		
+		else
+		{
+			if(target.uniqueId)
+			{
+				instance.uniqueId = target.uniqueId;
+			}
+			
+			if(returnInstance)
+			{
+				return instance;
+			}
+		}
+		
+		instance.addEventListener("complete", function(instance)
+		{
+			
+		});		
+	}
+    
+/*
+    function sound_play(target, returnInstance) 
+    {
+         //Play the sound: play (src, interrupt, delay, offset, loop, volume, pan)
+            
+		var instance = createjs.Sound.play(target.id, createjs.Sound.INTERRUPT_NONE, 0, 0, target.loop, target.volume);
             
         if(instance == null || instance.playState == createjs.Sound.PLAY_FAILED) 
         { 
          	return; 
+        }
+        
+        else
+        {
+	       if(target.uniqueId)
+		   {
+			   instance.uniqueId = target.uniqueId;
+		}
+			
+			if(returnInstance)
+			{
+				return instance;
+			}
         }
 		 
 		instance.addEventListener ("complete", function(instance) 
@@ -91,20 +142,16 @@
 		 
 		});
 	}
+*/
 	
-	function sound_volume(instanceSearch, newVolume)
+	function sound_volume(soundID, newVolume)
 	{
-		trace(createjs.Sound._instances.length);
-		
-		for(var i = 0; i < createjs.Sound._instances.length; i++)
-		{
-			if(createjs.Sound._instances[i].uniqueId === instanceSearch)
-			{
-				trace("FOUND");
-				
-				createjs.Sound._instances[i]._volume = newVolume;
-			}
-		}
+		effects_pedal[soundID].setVolume(newVolume);
+	}
+	
+	function sound_stop(soundID)
+	{
+		effects_pedal[soundID].stop();
 	}
 
 	
@@ -149,7 +196,7 @@
 		
 		}, 20);
 		
-		sound_play({id: "BGM_FX_SPLASH", loop: 0, volume: 1, uniqueId: "WHALE_SPLASH"});
+		sound_play({id: "BGM_FX_SPLASH", loop: 0, volume: 1, uniqueId: "WHALE_SPLASH"}, false);
 	
 		// trace(createjs);
 	}
@@ -158,7 +205,15 @@
 	{
 		trace("test_rabbit();");
 		
-		sound_volume("LEVEL_BG", 0.2);
-		
+		sound_volume("level_bg_forest", 0.2);
+	}
+	
+	function test_crow(event)
+	{
+		sound_stop("level_bg_forest");
+	}
+	
+	function test_whale(event)
+	{
 		
 	}
