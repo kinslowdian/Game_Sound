@@ -3,6 +3,8 @@
 	
 	var preload;
 	
+	var soundMain;
+	
 	var soundEffects_pedal;
 	
 	
@@ -56,6 +58,8 @@
 	
 	function sound_init()
 	{
+		soundMain = {};
+		
 		if(!createjs.Sound.initializeDefaultPlugins())
 		{
 			trace("NO_SOUND_SUPPORT");
@@ -65,28 +69,38 @@
 		
 		else
 		{
-            var assetsPath = "_assets/_sound/";
+            soundMain.fileCount = 0;
             
-            var manifest =	[
-                				{src:"bg_forest.mp3", id:"BGM_BG_FOREST"},
-								{src:"fx_splash.mp3", id:"BGM_FX_SPLASH"},
-								{src:"bgm_tune.mp3", id:"BGM_TUNE"}
-							];			
+            soundMain.assetsPath = "_assets/_sound/";
+            
+            soundMain.manifest =	[
+                						{src:"bg_forest.mp3", id:"BGM_BG_FOREST"},
+										{src:"fx_splash.mp3", id:"BGM_FX_SPLASH"},
+										{src:"bgm_tune.mp3", id:"BGM_TUNE"}
+									];			
 		
 			createjs.Sound.alternateExtensions = ["mp3"];	// add other extensions to try loading if the src file extension is not supported
 			createjs.Sound.addEventListener("fileload", createjs.proxy(sound_loaded, this)); // add an event listener for when load is completed
-			createjs.Sound.registerManifest(manifest, assetsPath);
+			createjs.Sound.registerManifest(soundMain.manifest, soundMain.assetsPath);
 		}
 	}
 	
     function sound_loaded(event) 
     {
-		setup();
+		soundMain.fileCount ++;
 		
-		// FIRST NEEDS TO BE TRUE
-		sound_list(true, "level_bg_forest", {target: {id: "BGM_BG_FOREST", loop: -1, volume: 1, uniqueId: "LEVEL_BG_FOREST"}, paused: true, returnInstance: true});
-		// REST FALSE UNLESS IT NEEDS TO BE FLUSHED
-		sound_list(false, "fx_splash", {target: {id: "BGM_FX_SPLASH", loop: 0, volume: 1, uniqueId: "WHALE_SPLASH"}, paused: true, returnInstance: true});
+		if(soundMain.fileCount == soundMain.manifest.length)
+		{
+			setup();
+			
+			// FIRST NEEDS TO BE TRUE
+			sound_list(true, "level_bg_forest", {target: {id: "BGM_BG_FOREST", loop: -1, volume: 1, uniqueId: "LEVEL_BG_FOREST"}, paused: true, returnInstance: true});
+			// REST FALSE UNLESS IT NEEDS TO BE FLUSHED
+			sound_list(false, "fx_splash", {target: {id: "BGM_FX_SPLASH", loop: 0, volume: 1, uniqueId: "WHALE_SPLASH"}, paused: true, returnInstance: true});			
+			
+			// SAFETY - FLUSH
+			soundMain.fileCount = 0;
+		}
     }
     
     function sound_list(pedal_new, pedal_id, pedal_params)
