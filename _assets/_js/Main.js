@@ -3,7 +3,7 @@
 	
 	var preload;
 	
-	var effects_pedal;
+	var soundEffects_pedal;
 	
 	
 	$(document).ready( function(){ thisReady(); } );
@@ -83,16 +83,21 @@
     {
 		setup();
 		
-		sound_list();
+		// FIRST NEEDS TO BE TRUE
+		sound_list(true, "level_bg_forest", {target: {id: "BGM_BG_FOREST", loop: -1, volume: 1, uniqueId: "LEVEL_BG_FOREST"}, paused: true, returnInstance: true});
+		// REST FALSE UNLESS IT NEEDS TO BE FLUSHED
+		sound_list(false, "fx_splash", {target: {id: "BGM_FX_SPLASH", loop: 0, volume: 1, uniqueId: "WHALE_SPLASH"}, paused: true, returnInstance: true});
     }
     
-    function sound_list()
+    function sound_list(pedal_new, pedal_id, pedal_params)
     {
-		effects_pedal = {};
+    	if(pedal_new || !soundEffects_pedal)
+    	{
+	    	soundEffects_pedal = {};	
+    	}
 		
-		effects_pedal.level_bg_forest = sound_run({id: "BGM_BG_FOREST", loop: -1, volume: 1, uniqueId: "LEVEL_BG_FOREST"}, true, true);
-		
-		effects_pedal.fx_splash = sound_run({id: "BGM_FX_SPLASH", loop: 0, volume: 1, uniqueId: "WHALE_SPLASH"}, true, true);	    
+		soundEffects_pedal[pedal_id] = {};
+		soundEffects_pedal[pedal_id] = sound_run(pedal_params.target, pedal_params.paused, pedal_params.returnInstance);	    
     }
     
 	function sound_run(target, paused, returnInstance)
@@ -132,25 +137,25 @@
 	
 	function sound_volume(soundID, newVolume)
 	{
-		if(effects_pedal[soundID])
+		if(soundEffects_pedal[soundID])
 		{
-			effects_pedal[soundID].setVolume(newVolume);	
+			soundEffects_pedal[soundID].setVolume(newVolume);	
 		}
 	}
 	
 	function sound_play(soundID)
 	{
-		if(effects_pedal[soundID])
+		if(soundEffects_pedal[soundID])
 		{
-			effects_pedal[soundID].play();	
+			soundEffects_pedal[soundID].play();	
 		}
 	}
 	
 	function sound_stop(soundID)
 	{
-		if(effects_pedal[soundID])
+		if(soundEffects_pedal[soundID])
 		{
-			effects_pedal[soundID].stop();	
+			soundEffects_pedal[soundID].stop();	
 		}
 	}
 	
@@ -158,12 +163,12 @@
 	{
 		trace("sound_purge();");
 		
-		for(var soundOBJ in effects_pedal)
+		for(var soundOBJ in soundEffects_pedal)
 		{
-			effects_pedal[soundOBJ].stop();
+			soundEffects_pedal[soundOBJ].stop();
 		}
 		
-		effects_pedal = {};
+		soundEffects_pedal = {};
 	}
 
 	
@@ -236,7 +241,9 @@
 	
 	function new_sound()
 	{
-		effects_pedal = {};
+		// soundEffects_pedal = {};
 		
-		effects_pedal.level_tune = sound_run({id: "BGM_TUNE", loop: -1, volume: 1, uniqueId: "LEVEL_BGM"}, false, true);		
+		// soundEffects_pedal.level_tune = sound_run({id: "BGM_TUNE", loop: -1, volume: 1, uniqueId: "LEVEL_BGM"}, false, true);
+		
+		sound_list(true, "level_tune", {target: {id: "BGM_TUNE", loop:-1, volume: 1, uniqueId: "LEVEL_BGM"}, paused: false, returnInstance: true});		
 	}
