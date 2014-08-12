@@ -3,8 +3,6 @@
 	
 	var preload;
 	
-	var soundMain;
-	
 	var soundEffects_pedal;
 	
 	
@@ -58,131 +56,166 @@
 	
 	function sound_init()
 	{
-		soundMain = {};
+		soundEffects_pedal = {};
 		
 		if(!createjs.Sound.initializeDefaultPlugins())
 		{
 			trace("NO_SOUND_SUPPORT");
+			
+			soundEffects_pedal = null;
 			
 			mainClick_init(null);
 		}
 		
 		else
 		{
-            soundMain.fileCount = 0;
+            soundEffects_pedal.main = {};
             
-            soundMain.assetsPath = "_assets/_sound/";
+            soundEffects_pedal.main.fileCount = 0;
             
-            soundMain.manifest =	[
-                						{src:"bg_forest.mp3", id:"BGM_BG_FOREST"},
-										{src:"fx_splash.mp3", id:"BGM_FX_SPLASH"},
-										{src:"bgm_tune.mp3", id:"BGM_TUNE"}
-									];			
-		
+            soundEffects_pedal.main.assetsPath = "_assets/_sound/";
+            
+		    soundEffects_pedal.main.manifest =	[
+		                							{src:"bg_forest.mp3", id:"BGM_BG_FOREST"},
+													{src:"fx_splash.mp3", id:"BGM_FX_SPLASH"},
+													{src:"bgm_tune.mp3", id:"BGM_TUNE"}
+												];
+            
 			createjs.Sound.alternateExtensions = ["mp3"];	// add other extensions to try loading if the src file extension is not supported
 			createjs.Sound.addEventListener("fileload", createjs.proxy(sound_loaded, this)); // add an event listener for when load is completed
-			createjs.Sound.registerManifest(soundMain.manifest, soundMain.assetsPath);
+			createjs.Sound.registerManifest(soundEffects_pedal.main.manifest, soundEffects_pedal.main.assetsPath);	            
 		}
 	}
 	
-    function sound_loaded(event) 
-    {
-		soundMain.fileCount ++;
+	function sound_loaded(event)
+	{
+		soundEffects_pedal.main.fileCount ++;
 		
-		if(soundMain.fileCount == soundMain.manifest.length)
+		if(soundEffects_pedal.main.fileCount == soundEffects_pedal.main.manifest.length)
 		{
 			setup();
 			
-			// FIRST NEEDS TO BE TRUE
-			sound_list(true, "level_bg_forest", {target: {id: "BGM_BG_FOREST", loop: -1, volume: 1, uniqueId: "LEVEL_BG_FOREST"}, paused: true, returnInstance: true});
-			// REST FALSE UNLESS IT NEEDS TO BE FLUSHED
-			sound_list(false, "fx_splash", {target: {id: "BGM_FX_SPLASH", loop: 0, volume: 1, uniqueId: "WHALE_SPLASH"}, paused: true, returnInstance: true});			
+			sound_refreshList();
 			
+			sound_list("level_bg_forest", {id: "BGM_BG_FOREST", loop: -1, volume: 1}, {paused:true, storeInstance: true});
+			sound_list("fx_splash", {id: "BGM_FX_SPLASH", loop: 0, volume: 1}, {paused:true, storeInstance: true});
+
 			// SAFETY - FLUSH
-			soundMain.fileCount = 0;
-		}
-    }
-    
-    function sound_list(pedal_new, pedal_id, pedal_params)
-    {
-    	if(pedal_new || !soundEffects_pedal)
-    	{
-	    	soundEffects_pedal = {};	
-    	}
-		
-		soundEffects_pedal[pedal_id] = {};
-		soundEffects_pedal[pedal_id] = sound_run(pedal_params.target, pedal_params.paused, pedal_params.returnInstance);	    
-    }
-    
-	function sound_run(target, paused, returnInstance)
+			soundEffects_pedal.main.fileCount = 0;
+		}		
+	}
+	
+	function sound_refreshList()
 	{
+		soundEffects_pedal.soundList = {};
+	}
+    
+	function sound_list(soundRef, soundSettings, soundOptions)
+	{
+		soundEffects_pedal.soundList[soundRef] = {};
+		
+		soundEffects_pedal.soundList[soundRef].ref = soundRef;
+		
+		soundEffects_pedal.soundList[soundRef].instance = null;
+		
+		soundEffects_pedal.soundList[soundRef].settings = {};
+		soundEffects_pedal.soundList[soundRef].settings = soundSettings;
+		
+		soundEffects_pedal.soundList[soundRef].options = {};
+		soundEffects_pedal.soundList[soundRef].options = soundOptions;
+		
+		soundEffects_pedal.soundList[soundRef].exists = false;
+		
+		sound_run(soundRef);		
+	}
+    
+	function sound_run(soundRef)
+	{
+		var _SOUND = soundEffects_pedal.soundList[soundRef];
+		
 		//Play the sound: play (src, interrupt, delay, offset, loop, volume, pan)
 		
-		var instance = createjs.Sound.play(target.id, createjs.Sound.INTERRUPT_NONE, 0, 0, target.loop, target.volume);
+		var instance = createjs.Sound.play(_SOUND.settings.id, createjs.Sound.INTERRUPT_NONE, 0, 0, _SOUND.settings.loop, _SOUND.settings.volume);
 		
 		if(instance == null || instance.playState == createjs.Sound.PLAY_FAILED)
 		{
+			_SOUND.exists = false;
+			
 			return;
 		}
 		
 		else
 		{
-			if(paused)
+			_SOUND.exists = true;
+			
+			if(_SOUND.options.paused)
 			{
-				instance.stop();	
+				instance.stop();
 			}
 			
-			if(target.uniqueId)
+			if(_SOUND.options.storeInstance)
 			{
-				instance.uniqueId = target.uniqueId;
-			}
-			
-			if(returnInstance)
-			{
-				return instance;
+				_SOUND.instance = instance;
 			}
 		}
 		
 		instance.addEventListener("complete", function(instance)
 		{
 			
-		});		
+		});			
 	}
 	
-	function sound_volume(soundID, newVolume)
+	function sound_play(soundRef)
 	{
-		if(soundEffects_pedal[soundID])
+		var _SOUND = soundEffects_pedal.soundList[soundRef];
+		
+		trace(_SOUND);
+		
+		if(_SOUND != undefined)
 		{
-			soundEffects_pedal[soundID].setVolume(newVolume);	
+			_SOUND.instance = createjs.Sound.play(_SOUND.settings.id, createjs.Sound.INTERRUPT_NONE, 0, 0, _SOUND.settings.loop, _SOUND.settings.volume);
+		}
+		
+/*
+		if(_SOUND.instance != null || _SOUND.instance != undefined)
+		{
+			// _SOUND.instance.play(_SOUND.settings.id, createjs.Sound.INTERRUPT_NONE, 0, 0, _SOUND.settings.loop, _SOUND.settings.volume);
+		
+			// _SOUND.instance.play();
+		
+			_SOUND.instance = createjs.Sound.play(_SOUND.settings.id, createjs.Sound.INTERRUPT_NONE, 0, 0, _SOUND.settings.loop, _SOUND.settings.volume);
+		}
+*/
+	}
+	
+	function sound_stop(soundRef)
+	{
+		var _SOUND = soundEffects_pedal.soundList[soundRef];
+		
+		if(_SOUND.instance != null || _SOUND.instance != undefined)
+		{
+			_SOUND.instance.stop();	
 		}
 	}
 	
-	function sound_play(soundID)
+	function sound_volume(soundRef, soundVolume)
 	{
-		if(soundEffects_pedal[soundID])
+		var _SOUND = soundEffects_pedal.soundList[soundRef];
+		
+		if(_SOUND.instance != null || _SOUND.instance != undefined)
 		{
-			soundEffects_pedal[soundID].play();	
-		}
-	}
-	
-	function sound_stop(soundID)
-	{
-		if(soundEffects_pedal[soundID])
-		{
-			soundEffects_pedal[soundID].stop();	
+			_SOUND.instance.setVolume(soundVolume);
 		}
 	}
 	
 	function sound_purge()
 	{
-		trace("sound_purge();");
-		
-		for(var soundOBJ in soundEffects_pedal)
+		for(var soundOBJ in soundEffects_pedal.soundList)
 		{
-			soundEffects_pedal[soundOBJ].stop();
+			sound_stop(soundEffects_pedal.soundList[soundOBJ].ref);
 		}
 		
-		soundEffects_pedal = {};
+		sound_refreshList();		
 	}
 
 	
@@ -259,5 +292,10 @@
 		
 		// soundEffects_pedal.level_tune = sound_run({id: "BGM_TUNE", loop: -1, volume: 1, uniqueId: "LEVEL_BGM"}, false, true);
 		
-		sound_list(true, "level_tune", {target: {id: "BGM_TUNE", loop:-1, volume: 1, uniqueId: "LEVEL_BGM"}, paused: false, returnInstance: true});		
+		// sound_list(true, "level_tune", {target: {id: "BGM_TUNE", loop:-1, volume: 1, uniqueId: "LEVEL_BGM"}, paused: false, returnInstance: true});		
+		
+		sound_refreshList();
+		
+		sound_list("level_tune", {id: "BGM_TUNE", loop: -1, volume: 1}, {paused:false, storeInstance: true});
+		sound_list("quick", {id: "BGM_FX_SPLASH", loop: -1, volume: 1}, {paused:false, storeInstance: true});
 	}
