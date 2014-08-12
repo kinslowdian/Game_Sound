@@ -42,6 +42,8 @@
 		sound_play("level_bg_forest");
 		
 		whale_test();
+	
+		seaTest();
 	}
 	
 	function mainClick_remove(event)
@@ -77,13 +79,19 @@
             
 		    soundEffects_pedal.main.manifest =	[
 		                							{src:"bg_forest.mp3", id:"BGM_BG_FOREST"},
+		                							{src:"bg_sea.mp3", id:"BGM_BG_SEA"},
 													{src:"fx_splash.mp3", id:"BGM_FX_SPLASH"},
 													{src:"bgm_tune.mp3", id:"BGM_TUNE"}
 												];
             
 			createjs.Sound.alternateExtensions = ["mp3"];	// add other extensions to try loading if the src file extension is not supported
 			createjs.Sound.addEventListener("fileload", createjs.proxy(sound_loaded, this)); // add an event listener for when load is completed
-			createjs.Sound.registerManifest(soundEffects_pedal.main.manifest, soundEffects_pedal.main.assetsPath);	            
+			createjs.Sound.registerManifest(soundEffects_pedal.main.manifest, soundEffects_pedal.main.assetsPath);
+			
+			// soundEffects_pedal.main.loop = null;
+			
+			soundEffects_pedal.main.enterFrame_in = null;
+			soundEffects_pedal.main.enterFrame_out = null;	            
 		}
 	}
 	
@@ -98,7 +106,8 @@
 			sound_refreshList();
 			
 			sound_list("level_bg_forest", {id: "BGM_BG_FOREST", loop: -1, volume: 1}, {paused:true, storeInstance: true});
-			sound_list("fx_splash", {id: "BGM_FX_SPLASH", loop: 0, volume: 1}, {paused:true, storeInstance: true});
+			sound_list("level_bg_sea", {id: "BGM_BG_SEA", loop: -1, volume: 0}, {paused:true, storeInstance: true});
+			sound_list("fx_splash", {id: "BGM_FX_SPLASH", loop: -1, volume: 0.1}, {paused:true, storeInstance: true});
 
 			// SAFETY - FLUSH
 			soundEffects_pedal.main.fileCount = 0;
@@ -225,11 +234,14 @@
 	{
 		trace("whale_test();");
 		
+		$("#whaleMain").addClass("tween-whaleSprite"); 
+		$("#whaleMain .whaleSprite").addClass("tween-waterAmbience");
+		
 		$(".tween-whaleSprite")[0].addEventListener("webkitAnimationStart", whale_animationStart, false);
 		$(".tween-whaleSprite")[0].addEventListener("animationstart", whale_animationStart, false);
 
 		$(".tween-whaleSprite")[0].addEventListener("webkitAnimationEnd", whale_animationEnd, false);
-		$(".tween-whaleSprite")[0].addEventListener("animationend", whale_animationEnd, false);
+		$(".tween-whaleSprite")[0].addEventListener("animationend", whale_animationEnd, false);		
 		
 		// TO CATCH ENTER_FRAME OF ANIMATION
 		// $(".tween-whaleSprite")[0].addEventListener("webkitAnimationIteration", whale_animationEnd, false);
@@ -238,7 +250,13 @@
 	
 	function whale_animationStart(event)
 	{
+		$(".tween-whaleSprite")[0].removeEventListener("webkitAnimationStart", whale_animationStart, false);
+		$(".tween-whaleSprite")[0].removeEventListener("animationstart", whale_animationStart, false);
+		
+		
 		$("#whaleMain").removeClass("tween-whaleSpriteSafety");
+		
+		sound_play("fx_splash");
 	}
 	
 	function whale_animationEnd(event)
@@ -253,14 +271,11 @@
 		$("#whaleMain").removeClass("tween-whaleSprite");
 		$("#whaleMain .whaleSprite").removeClass("tween-waterAmbience");
 		
-		exitFrame = setTimeout(function()
-		{ 
-			$("#whaleMain").addClass("tween-whaleSprite"); 
-			$("#whaleMain .whaleSprite").addClass("tween-waterAmbience");
 		
-		}, 20);
+		sound_stop("fx_splash");
 		
-		sound_play("fx_splash");
+		
+		exitFrame = setTimeout(whale_test, 500);
 	}
 	
 	function test_rabbit(event)
@@ -297,5 +312,90 @@
 		sound_refreshList();
 		
 		sound_list("level_tune", {id: "BGM_TUNE", loop: -1, volume: 1}, {paused:false, storeInstance: true});
-		sound_list("quick", {id: "BGM_FX_SPLASH", loop: -1, volume: 1}, {paused:false, storeInstance: true});
+		sound_list("quick", {id: "BGM_FX_SPLASH", loop: -1, volume: 0.05}, {paused:false, storeInstance: true});
+	}
+	
+	function seaTest()
+	{
+		var s = setTimeout(seaTestRun, 2000);
+	}
+	
+	function seaTestRun()
+	{
+		$("#sea").css("height", "100%");
+		
+		$(".waterEdge_fx").css("opacity", "1");
+	
+		$("#sea")[0].addEventListener("webkitTransitionEnd", seaTestRun0, false);
+		$("#sea")[0].addEventListener("transitionend", seaTestRun0, false);
+	
+	
+		sound_play("level_bg_sea");
+	
+		soundEffects_pedal.main.enterFrame_in = setInterval(fadeTest, 20, "level_bg_sea", 1);
+	}
+	
+	function seaTestRun0(event)
+	{
+		$("#sea")[0].removeEventListener("webkitTransitionEnd", seaTestRun0, false);
+		$("#sea")[0].removeEventListener("transitionend", seaTestRun0, false);		
+		
+		soundEffects_pedal.main.enterFrame_out = setInterval(fadeTest, 20, "level_bg_forest", 0);
+	}
+	
+	function fadeTest(soundRef, volTarget)
+	{
+		var _SOUND = soundEffects_pedal.soundList[soundRef];
+		
+		if(volTarget == 0)
+		{
+			if(_SOUND.instance != null || _SOUND.instance != undefined)
+			{
+				var vol = _SOUND.instance.getVolume();
+				
+				if(vol > volTarget)
+				{
+					sound_volume(soundRef, vol -= 0.01);
+				}
+				
+				else
+				{
+					sound_volume(soundRef, volTarget);
+					
+					sound_stop("level_bg_forest");
+					
+					clearInterval(soundEffects_pedal.main.enterFrame_out);
+				}
+			}
+			
+			else
+			{
+				clearInterval(soundEffects_pedal.main.enterFrame_out);
+			}			
+		}
+		
+		if(volTarget == 1)
+		{
+			if(_SOUND.instance != null || _SOUND.instance != undefined)
+			{
+				var vol = _SOUND.instance.getVolume();
+				
+				if(vol < volTarget)
+				{
+					sound_volume(soundRef, vol += 0.01);
+				}
+				
+				else
+				{
+					sound_volume(soundRef, volTarget);
+					
+					clearInterval(soundEffects_pedal.main.enterFrame_in);
+				}
+			}
+			
+			else
+			{
+				clearInterval(soundEffects_pedal.main.enterFrame_in);
+			}			
+		}	
 	}

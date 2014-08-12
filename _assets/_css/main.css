@@ -161,6 +161,17 @@
 		z-index: 0;
 	}
 	
+	.waterEdge_fx
+	{
+		opacity: 0;
+	}
+	
+	.tween-waterEdge_fx
+	{
+		-webkit-transition: opacity 4s linear;
+		transition: opacity 4s linear;
+	}
+	
 	.waterEdge
 	{
 		position: absolute;
@@ -217,6 +228,51 @@
 		
 		
 		z-index: 1;
+	}
+	
+	#sea
+	{
+		width: 100%;
+		height: 0%;
+		
+		overflow: hidden;
+		
+		position: absolute;
+		left: 0; right: 0; top: 0; bottom: 0;
+		
+		margin: 0;
+		
+		z-index: 0;
+	}
+	
+	.tween-sea
+	{
+		-webkit-transition: height 4s ease-in;
+		transition: height 4s ease-in;
+	}
+	
+	#sea .sea_content
+	{
+		width: 320px;
+		height: 100%;
+		
+		position: absolute;
+		left: 0; right: 0; top: 0; bottom: 0;
+		
+		margin: 0 auto;
+		
+		z-index: 1;
+	}
+	
+	#sea .surface
+	{
+		width: 100%;
+		height: 100%;
+		
+		position: absolute;
+		left: 0; right: 0; top: 0; bottom: 0;
+		
+		z-index: 0;
 	}
 	
 	.tween-waterAmbience

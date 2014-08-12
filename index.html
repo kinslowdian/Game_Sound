@@ -33,7 +33,7 @@
 			
 		</div>
 		
-		<div id="wrapper" class="pixels_trees">
+		<div id="wrapper" class="tree pixels_trees">
 			
 			<div id="weather" class="tweenFlickerFix">
 					
@@ -42,27 +42,21 @@
 					
 			</div>
 			
-			<div id="content" class="water pixels_water">
-				
-				<div id="whaleMain" class="tween-whaleSprite tweenFlickerFix">
-						
-					<div class="whaleSprite pixels_whale tween-waterAmbience"></div>
-					
-				</div>
+			<div id="content">
 		
-				
 				<div id="island">
 					
 					<div id="island-trees0" class="tree pixels_trees"></div>
 					<div id="island-trees1" class="tree pixels_trees"></div>
 					
-					<div id="island-waterEdge0" class="waterEdge pixels_waterEdge tween-waterEdge"></div>
-					<div id="island-waterEdge1" class="waterEdge pixels_waterEdge tween-waterEdge"></div>
+					<div class="waterEdge_fx tween-waterEdge_fx">
+					
+						<div id="island-waterEdge0" class="waterEdge pixels_waterEdge tween-waterEdge"></div>
+						<div id="island-waterEdge1" class="waterEdge pixels_waterEdge tween-waterEdge"></div>
+					
+					</div>
 					
 				</div>
-				
-				<div id="overflow1" class="water pixels_water"></div>
-				<div id="overflow1Edge" class="waterEdge pixels_waterEdge tween-waterEdge"></div>
 				
 				<div id="land">
 					
@@ -75,11 +69,15 @@
 					<div id="trees6" class="tree pixels_trees"></div>
 					<div id="trees7" class="tree pixels_trees"></div>
 					
-					<div id="waterEdge0" class="waterEdge pixels_waterEdge tween-waterEdge"></div>
-					<div id="waterEdge1" class="waterEdge pixels_waterEdge tween-waterEdge"></div>
-					<div id="waterEdge2" class="waterEdge pixels_waterEdge tween-waterEdge"></div>
-					<div id="waterEdge3" class="waterEdge pixels_waterEdge tween-waterEdge"></div>
-					<div id="waterEdge4" class="waterEdge pixels_waterEdge tween-waterEdge"></div>
+					<div class="waterEdge_fx tween-waterEdge_fx">
+						
+						<div id="waterEdge0" class="waterEdge pixels_waterEdge tween-waterEdge"></div>
+						<div id="waterEdge1" class="waterEdge pixels_waterEdge tween-waterEdge"></div>
+						<div id="waterEdge2" class="waterEdge pixels_waterEdge tween-waterEdge"></div>
+						<div id="waterEdge3" class="waterEdge pixels_waterEdge tween-waterEdge"></div>
+						<div id="waterEdge4" class="waterEdge pixels_waterEdge tween-waterEdge"></div>
+					
+					</div>
 					
 					<div id="rabbit0" class="enemy_rabbit map-enemy_40x40 tweenFlickerFix">
 													
@@ -124,11 +122,27 @@
 					</div>
 					
 					
+				</div> <!-- #land -->
+				
+			</div> <!-- #content -->
+			
+			<div id="sea" class="tween-sea">
+					
+				<div class="sea_content">
+				
+					<div id="whaleMain" class="tween-whaleSprite tweenFlickerFix">
+							
+						<div class="whaleSprite pixels_whale tween-waterAmbience"></div>
+						
+					</div>				
+				
 				</div>
 				
-			</div>
+				<div class="surface water pixels_water"></div>
+					
+			</div> <!-- #sea -->		
 			
-		</div>
+		</div> <!-- #wrapper -->
 	
 	</body>
 
