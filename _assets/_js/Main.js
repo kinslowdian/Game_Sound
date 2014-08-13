@@ -88,10 +88,9 @@
 			createjs.Sound.addEventListener("fileload", createjs.proxy(sound_loaded, this)); // add an event listener for when load is completed
 			createjs.Sound.registerManifest(soundEffects_pedal.main.manifest, soundEffects_pedal.main.assetsPath);
 			
-			// soundEffects_pedal.main.loop = null;
-			
 			soundEffects_pedal.main.enterFrame_in = null;
-			soundEffects_pedal.main.enterFrame_out = null;	            
+			soundEffects_pedal.main.enterFrame_out = null;
+			soundEffects_pedal.main.fadeValue = 0.01;	            
 		}
 	}
 	
@@ -107,7 +106,7 @@
 			
 			sound_list("level_bg_forest", {id: "BGM_BG_FOREST", loop: -1, volume: 1}, {paused:true, storeInstance: true});
 			sound_list("level_bg_sea", {id: "BGM_BG_SEA", loop: -1, volume: 0}, {paused:true, storeInstance: true});
-			sound_list("fx_splash", {id: "BGM_FX_SPLASH", loop: -1, volume: 0.1}, {paused:true, storeInstance: true});
+			sound_list("fx_splash", {id: "BGM_FX_SPLASH", loop: -1, volume: 0.08}, {paused:true, storeInstance: true});
 
 			// SAFETY - FLUSH
 			soundEffects_pedal.main.fileCount = 0;
@@ -184,17 +183,6 @@
 		{
 			_SOUND.instance = createjs.Sound.play(_SOUND.settings.id, createjs.Sound.INTERRUPT_NONE, 0, 0, _SOUND.settings.loop, _SOUND.settings.volume);
 		}
-		
-/*
-		if(_SOUND.instance != null || _SOUND.instance != undefined)
-		{
-			// _SOUND.instance.play(_SOUND.settings.id, createjs.Sound.INTERRUPT_NONE, 0, 0, _SOUND.settings.loop, _SOUND.settings.volume);
-		
-			// _SOUND.instance.play();
-		
-			_SOUND.instance = createjs.Sound.play(_SOUND.settings.id, createjs.Sound.INTERRUPT_NONE, 0, 0, _SOUND.settings.loop, _SOUND.settings.volume);
-		}
-*/
 	}
 	
 	function sound_stop(soundRef)
@@ -275,7 +263,7 @@
 		sound_stop("fx_splash");
 		
 		
-		exitFrame = setTimeout(whale_test, 500);
+		exitFrame = setTimeout(whale_test, 1.5 * 1000);
 	}
 	
 	function test_rabbit(event)
@@ -302,13 +290,7 @@
 	}
 	
 	function new_sound()
-	{
-		// soundEffects_pedal = {};
-		
-		// soundEffects_pedal.level_tune = sound_run({id: "BGM_TUNE", loop: -1, volume: 1, uniqueId: "LEVEL_BGM"}, false, true);
-		
-		// sound_list(true, "level_tune", {target: {id: "BGM_TUNE", loop:-1, volume: 1, uniqueId: "LEVEL_BGM"}, paused: false, returnInstance: true});		
-		
+	{	
 		sound_refreshList();
 		
 		sound_list("level_tune", {id: "BGM_TUNE", loop: -1, volume: 1}, {paused:false, storeInstance: true});
@@ -322,80 +304,133 @@
 	
 	function seaTestRun()
 	{
-		$("#sea").css("height", "100%");
+		var css_sea;
+		
+		css_sea = 	{	
+						"-webkit-transform" : "translateY(0)",
+						"transform" : "translateY(0)"
+					};
+		
+		// $("#sea").css("height", "100%");
+		
+		$("#sea").css(css_sea);
 		
 		$(".waterEdge_fx").css("opacity", "1");
 	
-		$("#sea")[0].addEventListener("webkitTransitionEnd", seaTestRun0, false);
-		$("#sea")[0].addEventListener("transitionend", seaTestRun0, false);
+		$("#sea .tween-sea")[0].addEventListener("webkitTransitionEnd", seaTestRun0, false);
+		$("#sea .tween-sea")[0].addEventListener("transitionend", seaTestRun0, false);
 	
 	
 		sound_play("level_bg_sea");
-	
-		soundEffects_pedal.main.enterFrame_in = setInterval(fadeTest, 20, "level_bg_sea", 1);
+		
+		sound_fadeInit("level_bg_sea", 1, "IN", {call_funct: test_done, call_params: ["OH", "MY", "GOD"]});
 	}
 	
 	function seaTestRun0(event)
 	{
-		$("#sea")[0].removeEventListener("webkitTransitionEnd", seaTestRun0, false);
-		$("#sea")[0].removeEventListener("transitionend", seaTestRun0, false);		
-		
-		soundEffects_pedal.main.enterFrame_out = setInterval(fadeTest, 20, "level_bg_forest", 0);
+		$("#sea .tween-sea")[0].removeEventListener("webkitTransitionEnd", seaTestRun0, false);
+		$("#sea .tween-sea")[0].removeEventListener("transitionend", seaTestRun0, false);
+	
+		sound_fadeInit("level_bg_forest", 0, "OUT", {call_funct: test_basic});
 	}
 	
-	function fadeTest(soundRef, volTarget)
+	function sound_fadeInit(soundRef, volTarget, fadeType, onEnd)
 	{
-		var _SOUND = soundEffects_pedal.soundList[soundRef];
+		var _SOUND = soundEffects_pedal.soundList[soundRef]; 
 		
-		if(volTarget == 0)
+		if(_SOUND.instance != null || _SOUND.instance != undefined)
 		{
-			if(_SOUND.instance != null || _SOUND.instance != undefined)
+			if(fadeType === "IN")
 			{
-				var vol = _SOUND.instance.getVolume();
-				
-				if(vol > volTarget)
-				{
-					sound_volume(soundRef, vol -= 0.01);
-				}
-				
-				else
-				{
-					sound_volume(soundRef, volTarget);
-					
-					sound_stop("level_bg_forest");
-					
-					clearInterval(soundEffects_pedal.main.enterFrame_out);
-				}
+				soundEffects_pedal.main.enterFrame_in = setInterval(sound_fadeRun, 20, _SOUND.instance, volTarget, fadeType, soundRef, onEnd);
 			}
 			
-			else
+			if(fadeType === "OUT")
 			{
-				clearInterval(soundEffects_pedal.main.enterFrame_out);
+				soundEffects_pedal.main.enterFrame_out = setInterval(sound_fadeRun, 20, _SOUND.instance, volTarget, fadeType, soundRef, onEnd);
 			}			
 		}
+	}
+	
+	function sound_fadeRun(soundInstance, volTarget, fadeType, soundRef, onEnd)
+	{
+		var vol = soundInstance.getVolume();
 		
-		if(volTarget == 1)
+		//// IN
+		
+		if(fadeType === "IN")
 		{
-			if(_SOUND.instance != null || _SOUND.instance != undefined)
+			if(vol < volTarget)
 			{
-				var vol = _SOUND.instance.getVolume();
-				
-				if(vol < volTarget)
-				{
-					sound_volume(soundRef, vol += 0.01);
-				}
-				
-				else
-				{
-					sound_volume(soundRef, volTarget);
-					
-					clearInterval(soundEffects_pedal.main.enterFrame_in);
-				}
+				soundInstance.setVolume(vol += soundEffects_pedal.main.fadeValue);
 			}
-			
+				
 			else
 			{
 				clearInterval(soundEffects_pedal.main.enterFrame_in);
-			}			
-		}	
+					
+				soundInstance.setVolume(volTarget);
+				
+				if(onEnd)
+				{
+					if(onEnd.call_params)
+					{
+						// .apply CONVERTS PARAMS IN OBJECT INTO A READABLE FUNCTION
+						onEnd.call_funct.apply(this, onEnd.call_params);	
+					}
+					
+					else
+					{
+						onEnd.call_funct();	
+					}
+				}
+			}
+		}		
+		
+		
+		//// OUT
+		
+		if(fadeType === "OUT")
+		{
+				
+			if(vol > volTarget)
+			{
+				soundInstance.setVolume(vol -= soundEffects_pedal.main.fadeValue);
+			}
+				
+			else
+			{
+				clearInterval(soundEffects_pedal.main.enterFrame_out);
+					
+				soundInstance.setVolume(volTarget);
+					
+				sound_stop(soundRef);
+				
+				if(onEnd)
+				{
+					if(onEnd.call_params)
+					{
+						// .apply CONVERTS PARAMS IN OBJECT INTO A READABLE FUNCTION
+						onEnd.call_funct.apply(this, onEnd.call_params);	
+					}
+					
+					else
+					{
+						onEnd.call_funct();	
+					}
+				}
+			}
+		}		
 	}
+	
+	function test_done(x, y, z)
+	{
+		trace("test_done(); " + x + " " + y + " " + z); 
+	}
+	
+	function test_basic()
+	{
+		trace("BASIC!!!!!!!!!!!!!!!!!!!!!!!!!");
+	}
+	
+	
