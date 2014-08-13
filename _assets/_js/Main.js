@@ -81,7 +81,9 @@
 		                							{src:"bg_forest.mp3", id:"BGM_BG_FOREST"},
 		                							{src:"bg_sea.mp3", id:"BGM_BG_SEA"},
 													{src:"fx_splash.mp3", id:"BGM_FX_SPLASH"},
-													{src:"bgm_tune.mp3", id:"BGM_TUNE"}
+													{src:"fx_crow.mp3", id:"BGM_FX_CROW"},
+													{src:"fx_squeak.mp3", id:"BGM_FX_RABBIT"},
+													{src:"fx_moo.mp3", id:"BGM_FX_WHALE"}
 												];
             
 			createjs.Sound.alternateExtensions = ["mp3"];	// add other extensions to try loading if the src file extension is not supported
@@ -106,7 +108,11 @@
 			
 			sound_list("level_bg_forest", {id: "BGM_BG_FOREST", loop: -1, volume: 1}, {paused:true, storeInstance: true});
 			sound_list("level_bg_sea", {id: "BGM_BG_SEA", loop: -1, volume: 0}, {paused:true, storeInstance: true});
+			
 			sound_list("fx_splash", {id: "BGM_FX_SPLASH", loop: -1, volume: 0.08}, {paused:true, storeInstance: true});
+			sound_list("fx_crow", {id: "BGM_FX_CROW", loop: 0, volume: 1}, {paused:true, storeInstance: true});
+			sound_list("fx_rabbit", {id: "BGM_FX_RABBIT", loop: 0, volume: 0.06}, {paused:true, storeInstance: true});
+			sound_list("fx_whale", {id: "BGM_FX_WHALE", loop: 0, volume: 1}, {paused:true, storeInstance: true});
 
 			// SAFETY - FLUSH
 			soundEffects_pedal.main.fileCount = 0;
@@ -164,25 +170,40 @@
 			if(_SOUND.options.storeInstance)
 			{
 				_SOUND.instance = instance;
-			}
-		}
-		
-		instance.addEventListener("complete", function(instance)
-		{
+				
+				_SOUND.instance.uniqueId = soundRef;
 			
-		});			
+				_SOUND.instance.addEventListener("complete", sound_end);
+			}			
+		}		
 	}
 	
 	function sound_play(soundRef)
 	{
 		var _SOUND = soundEffects_pedal.soundList[soundRef];
 		
-		trace(_SOUND);
-		
 		if(_SOUND != undefined)
 		{
-			_SOUND.instance = createjs.Sound.play(_SOUND.settings.id, createjs.Sound.INTERRUPT_NONE, 0, 0, _SOUND.settings.loop, _SOUND.settings.volume);
+			if(_SOUND.instance.playState === "playFinished")
+			{
+				_SOUND.instance = createjs.Sound.play(_SOUND.settings.id, createjs.Sound.INTERRUPT_NONE, 0, 0, _SOUND.settings.loop, _SOUND.settings.volume);
+				
+				_SOUND.instance.uniqueId = soundRef;
+
+				_SOUND.instance.addEventListener("complete", sound_end);				
+			}
 		}
+	}
+	
+	function sound_end(event)
+	{
+		var _SOUND = soundEffects_pedal.soundList[event.target.uniqueId];
+		
+		trace("?????????????");
+		trace(_SOUND);
+		trace("?????????????");
+		
+		_SOUND.instance.removeEventListener("complete", sound_end);
 	}
 	
 	function sound_stop(soundRef)
@@ -229,11 +250,7 @@
 		$(".tween-whaleSprite")[0].addEventListener("animationstart", whale_animationStart, false);
 
 		$(".tween-whaleSprite")[0].addEventListener("webkitAnimationEnd", whale_animationEnd, false);
-		$(".tween-whaleSprite")[0].addEventListener("animationend", whale_animationEnd, false);		
-		
-		// TO CATCH ENTER_FRAME OF ANIMATION
-		// $(".tween-whaleSprite")[0].addEventListener("webkitAnimationIteration", whale_animationEnd, false);
-		// $(".tween-whaleSprite")[0].addEventListener("animationiteration", whale_animationEnd, false);
+		$(".tween-whaleSprite")[0].addEventListener("animationend", whale_animationEnd, false);
 	}
 	
 	function whale_animationStart(event)
@@ -269,32 +286,22 @@
 	function test_rabbit(event)
 	{
 		trace("test_rabbit();");
-		
-		sound_volume("level_bg_forest", 0.2);
+	
+		sound_play("fx_rabbit");
 	}
 	
 	function test_crow(event)
 	{
 		trace("test_crow();");
-		
-		sound_stop("level_bg_forest");
+	
+		sound_play("fx_crow");
 	}
 	
 	function test_whale(event)
 	{
 		trace("test_whale();");
-		
-		sound_purge();
-		
-		new_sound();
-	}
 	
-	function new_sound()
-	{	
-		sound_refreshList();
-		
-		sound_list("level_tune", {id: "BGM_TUNE", loop: -1, volume: 1}, {paused:false, storeInstance: true});
-		sound_list("quick", {id: "BGM_FX_SPLASH", loop: -1, volume: 0.05}, {paused:false, storeInstance: true});
+		sound_play("fx_whale");
 	}
 	
 	function seaTest()
@@ -311,14 +318,12 @@
 						"transform" : "translateY(0)"
 					};
 		
-		// $("#sea").css("height", "100%");
-		
 		$("#sea").css(css_sea);
 		
 		$(".waterEdge_fx").css("opacity", "1");
 	
-		$("#sea .tween-sea")[0].addEventListener("webkitTransitionEnd", seaTestRun0, false);
-		$("#sea .tween-sea")[0].addEventListener("transitionend", seaTestRun0, false);
+		$(".tween-sea")[0].addEventListener("webkitTransitionEnd", seaTestRun0, false);
+		$(".tween-sea")[0].addEventListener("transitionend", seaTestRun0, false);
 	
 	
 		sound_play("level_bg_sea");
@@ -328,8 +333,8 @@
 	
 	function seaTestRun0(event)
 	{
-		$("#sea .tween-sea")[0].removeEventListener("webkitTransitionEnd", seaTestRun0, false);
-		$("#sea .tween-sea")[0].removeEventListener("transitionend", seaTestRun0, false);
+		$(".tween-sea")[0].removeEventListener("webkitTransitionEnd", seaTestRun0, false);
+		$(".tween-sea")[0].removeEventListener("transitionend", seaTestRun0, false);
 	
 		sound_fadeInit("level_bg_forest", 0, "OUT", {call_funct: test_basic});
 	}
