@@ -13,6 +13,14 @@
 		
 		-webkit-user-select: none;
 		user-select: none;
+		
+		pointer-events: none;
+	}
+	
+	.interact
+	{
+		pointer-events: auto;
+		cursor: pointer;
 	}
 	
 	.tweenFlickerFix div
@@ -82,7 +90,9 @@
 		
 		background: #ff0033;
 		
-		pointer-events: auto;
+		background: rgba(255, 0, 51, 0.6);
+		
+		/* pointer-events: auto; */
 	}
 	
 	.tween-soundOpt
@@ -132,10 +142,12 @@
 		overflow: hidden;
 	}
 	
+/*
 	#wrapper > div
 	{
 		pointer-events: none;
 	}
+*/
 	
 	#content
 	{
@@ -514,8 +526,10 @@
 		-webkit-transform: translate(40px, 40px);
 		transform: translate(40px, 40px);
 		
+/*
 		pointer-events: auto;
 		cursor: pointer;
+*/
 	}
 	
 	#crow0
@@ -523,8 +537,10 @@
 		-webkit-transform: translate(80px, 80px);
 		transform: translate(80px, 80px);
 		
+/*
 		pointer-events: auto;
 		cursor: pointer;
+*/
 	}
 	
 	
@@ -846,8 +862,13 @@
 		
 		opacity: 0.2;
 		
+/*
 		pointer-events: auto;
 		cursor: pointer;
+*/
+		
+		-webkit-transform: translateY(-100%);
+		transform: translateY(-100%);
 	}
 	
 	.pixels_whale
@@ -860,11 +881,6 @@
 	
 	.tween-whaleSprite
 	{
-/*
-		-webkit-animation: tweenWhaleSpriteFrames 12s ease-in infinite;
-		animation: tweenWhaleSpriteFrames 12s ease-in infinite;
-*/
-
 		-webkit-animation: tweenWhaleSpriteFrames 12s ease-in forwards;
 		animation: tweenWhaleSpriteFrames 12s ease-in forwards;
 	}
@@ -892,13 +908,21 @@
 		width: inherit;
 		height: inherit;
 		
+		opacity: 0;
+		
 		position: absolute;
 		
 		left: 0; right: 0; top: 0; bottom: 0;
 		
 		margin: 0;
 		
-		z-index: 1;
+		z-index: 2;
+	}
+	
+	.tween-Weather
+	{
+		-webkit-transition: opacity 0.4s ease;
+		transition: opacity 0.4s ease;
 	}
 	
 	.pixels_sharpClouds0
