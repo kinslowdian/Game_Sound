@@ -12,17 +12,41 @@
 	
 	function thisReady()
 	{
-		sound_init(setup);
+		sound_init(setup_step0);
 	}
 	
-	function setup()
+	function setup_step0()
 	{
+    	var css; 
+    	
+    	$("#soundOpt_loader")[0].addEventListener("webkitTransitionEnd", setup_step1, false);
+		$("#soundOpt_loader")[0].addEventListener("transitionend", setup_step1, false);
+		
+		css = 	{
+					"-webkit-transform" : "translateY(-200%)",
+					"transform" 		: "translateY(-200%)",
+					"opacity"			: "0"
+				};
+		
+		
+		$("#soundOpt_loader").css(css);
+		
+				
+	}
+	
+	function setup_step1(event)
+	{
+		$("#soundOpt_loader")[0].removeEventListener("webkitTransitionEnd", setup_step1, false);
+		$("#soundOpt_loader")[0].removeEventListener("transitionend", setup_step1, false);
+		
+		$("#soundOpt_loader_wrapper").remove();
+		
 		$("#soundOpt")[0].addEventListener("click", mainClick_init, false);
 		$("#rabbit0")[0].addEventListener("click", test_rabbit, false);
 		$("#crow0")[0].addEventListener("click", test_crow, false);
 		$(".whaleSprite")[0].addEventListener("click", test_whale, false);
-    
-		$("#soundOpt h1").css("opacity", "1");		
+		
+		$("#soundOpt_prompt").css("opacity", "1");	
 	}
 	
 	function mainClick_init(event)
@@ -61,7 +85,6 @@
 		soundEffects_pedal = {};
 		
 		var soundTest_support = createjs.Sound.initializeDefaultPlugins();
-		
 		
 		if(soundTest_support == false || soundTest_support == undefined || soundTest_support == null)
 		{
@@ -413,7 +436,7 @@
 	
 	function seaTest()
 	{
-		var s = setTimeout(seaTestRun, 2000);
+		var s = setTimeout(seaTestRun, 1.6 * 1000);
 	}
 	
 	function seaTestRun()
