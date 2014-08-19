@@ -46,6 +46,14 @@
 		$("#crow0")[0].addEventListener("click", test_crow, false);
 		$(".whaleSprite")[0].addEventListener("click", test_whale, false);
 		
+		
+		$(".tree-sound").each(function(i, treeBlock)
+		{
+			var _id = $(treeBlock).attr("id");
+			
+			$("#" + _id)[0].addEventListener("click", test_trees, false);	
+		});
+		
 		$("#soundOpt_prompt").css("opacity", "1");	
 	}
 	
@@ -116,7 +124,8 @@
 													{src:"fx_splash.ogg", id:"BGM_FX_SPLASH"},
 													{src:"fx_crow.ogg", id:"BGM_FX_CROW"},
 													{src:"fx_squeak.ogg", id:"BGM_FX_RABBIT"},
-													{src:"fx_moo.ogg", id:"BGM_FX_WHALE"}
+													{src:"fx_moo.ogg", id:"BGM_FX_WHALE"},
+													{src:"fx_trees.ogg", id:"BGM_FX_TREES"}
 												];
             
 			createjs.Sound.alternateExtensions = ["mp3"];	// add other extensions to try loading if the src file extension is not supported
@@ -149,6 +158,8 @@
 			sound_list("fx_crow", {id: "BGM_FX_CROW", loop: 0, volume: 1}, {paused:true, storeInstance: true, singleChannel: false});
 			sound_list("fx_rabbit", {id: "BGM_FX_RABBIT", loop: 0, volume: 0.06}, {paused:true, storeInstance: true, singleChannel: false});
 			sound_list("fx_whale", {id: "BGM_FX_WHALE", loop: 0, volume: 1}, {paused:true, storeInstance: true, singleChannel: true});
+			
+			sound_list("fx_trees", {id: "BGM_FX_TREES", loop: 0, volume: 1}, {paused:true, storeInstance: true, singleChannel: false});
 
 			// SAFETY - FLUSH
 			soundEffects_pedal.main.fileCount = 0;
@@ -182,6 +193,9 @@
 		soundEffects_pedal.soundList[soundRef].options = soundOptions;
 		
 		soundEffects_pedal.soundList[soundRef].exists = false;
+		
+		soundEffects_pedal.soundList[soundRef].eventTimer = null;
+		
 		
 		sound_run(soundRef);		
 	}
@@ -264,7 +278,19 @@
 		
 		if(_SOUND.onEndCallBack)
 		{
-			_SOUND.onEndCallBack();
+			if(_SOUND.onEndCallBack.call_params)
+			{
+				_SOUND.onEndCallBack.call_funct.apply(this, _SOUND.onEndCallBack.call_params);
+			}
+			
+			else
+			{
+				_SOUND.onEndCallBack.call_funct();
+			}
+			
+			
+			
+			// _SOUND.onEndCallBack();
 			
 			delete _SOUND.onEndCallBack;
 		}
@@ -411,12 +437,14 @@
 	
 	function test_crow(event)
 	{
-		sound_play("fx_crow");
+		char_faceChange("crow0", "map-enemy_40x40_head_default", "map-enemy_40x40_head_fear")
+		
+		sound_play("fx_crow", {call_funct: char_faceChange, call_params: ["crow0", "map-enemy_40x40_head_fear", "map-enemy_40x40_head_default"]});
 	}
 	
 	function test_whale(event)
 	{
-		sound_play("fx_whale", whale_stageFX);
+		sound_play("fx_whale", {call_funct: whale_stageFX});
 		
 		if(!weatherFX)
 		{
@@ -425,6 +453,13 @@
 			$("#weather").css("opacity", "1");
 		}
 		
+	}
+	
+	function test_trees(event)
+	{
+		trace("test_trees");
+		
+		sound_play("fx_trees");
 	}
 	
 	/////////// CLICKS
@@ -528,6 +563,20 @@
 	function whale_delay(s)
 	{
 		var wd = setTimeout(whale_test, s * 1000);
+	}
+	
+	function char_faceChange(npc, class_r, class_a)
+	{
+		var classCheck;
+		
+		classCheck = $("#" + npc + " .map-enemy_40x40-head").attr("class").search(class_a);
+		
+		if(classCheck < 0)
+		{
+			trace("ACCESS");
+			
+			$("#" + npc + " .map-enemy_40x40-head").removeClass(class_r).addClass(class_a);
+		}		
 	}	
 	
 	/////////// TESTS
